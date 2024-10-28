@@ -1,6 +1,6 @@
 # GO Blog API
 
-Merhaba bu proje Go land dili ile geliştirdiğim basit bir blog API'sidir.
+Merhaba bu proje Go lang ile geliştirdiğim basit bir blog API'sidir.
 
 Bu projeyi geliştirmekteki temel amacım projede Go Lang'ın kendi http kütüphanesini kullanarak ve 3. taraf kütüphanelere olan bağımlılığı en aza indirmeye çalışarak bir Blog API'si geliştirmekti
 
