@@ -40,7 +40,7 @@ go mod tidy
 4. Projeyi çalıştırın:
 
 ```
-go run main.go
+go run cmd/main.go
 ```
 
 Ve herhangi bir problem olmazsa proje başarılı bir şekilde çalışacaktır
