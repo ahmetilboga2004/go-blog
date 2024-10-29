@@ -9,15 +9,15 @@ import (
 	"github.com/google/uuid"
 )
 
-type UserRepository struct {
+type userRepository struct {
 	DB *sql.DB
 }
 
-func NewUserRepository(db *sql.DB) *UserRepository {
-	return &UserRepository{DB: db}
+func NewUserRepository(db *sql.DB) *userRepository {
+	return &userRepository{DB: db}
 }
 
-func (r *UserRepository) CreateUser(user *models.User) (*models.User, error) {
+func (r *userRepository) Create(user *models.User) (*models.User, error) {
 	userID := uuid.New()
 
 	salt, err := utils.GenerateSalt()
@@ -35,7 +35,7 @@ func (r *UserRepository) CreateUser(user *models.User) (*models.User, error) {
 	return user, nil
 }
 
-func (r *UserRepository) GetAllUser() ([]*models.User, error) {
+func (r *userRepository) GetAll() ([]*models.User, error) {
 	rows, err := r.DB.Query("SELECT id, firstName, lastName, username, email FROM users")
 	if err != nil {
 		return nil, err
@@ -58,7 +58,7 @@ func (r *UserRepository) GetAllUser() ([]*models.User, error) {
 	return users, nil
 }
 
-func (r *UserRepository) GetUserByID(id uuid.UUID) (*models.User, error) {
+func (r *userRepository) GetByID(id uuid.UUID) (*models.User, error) {
 	query := `SELECT id, firstName, lastName, username, email FROM users WHERE id = ?`
 	rows := r.DB.QueryRow(query, id)
 	var user models.User
@@ -71,7 +71,7 @@ func (r *UserRepository) GetUserByID(id uuid.UUID) (*models.User, error) {
 	return &user, nil
 }
 
-func (r *UserRepository) FindByUsernameOrEmail(username, email string) (*models.User, error) {
+func (r *userRepository) FindByUsernameOrEmail(username, email string) (*models.User, error) {
 	query := `SELECT id, firstName, lastName, username, email, password, salt FROM users WHERE username = ? OR email = ?`
 	user := &models.User{}
 	err := r.DB.QueryRow(query, username, email).Scan(&user.ID, &user.FirstName, &user.LastName, &user.Username, &user.Email, &user.Password, &user.Salt)
@@ -85,7 +85,7 @@ func (r *UserRepository) FindByUsernameOrEmail(username, email string) (*models.
 	return user, nil
 }
 
-func (r *UserRepository) Update(id uuid.UUID, user *models.User) (*models.User, error) {
+func (r *userRepository) Update(id uuid.UUID, user *models.User) (*models.User, error) {
 	query := `UPDATE users SET firstName = ?, lastName = ?, username = ?, email = ?, password = ? WHERE id = ? RETURNING id, firstName, lastName, username, email`
 	row := r.DB.QueryRow(query, user.FirstName, user.LastName, user.Username, user.Email, user.Password, id)
 	if err := row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Username, &user.Email); err != nil {
@@ -97,7 +97,7 @@ func (r *UserRepository) Update(id uuid.UUID, user *models.User) (*models.User, 
 	return user, nil
 }
 
-func (r *UserRepository) Delete(id uuid.UUID) error {
+func (r *userRepository) Delete(id uuid.UUID) error {
 	query := "DELETE FROM users WHERE id = ?"
 	result, err := r.DB.Exec(query, id)
 	if err != nil {

@@ -3,21 +3,27 @@ package services
 import (
 	"errors"
 
+	"github.com/ahmetilboga2004/go-blog/internal/interfaces"
 	"github.com/ahmetilboga2004/go-blog/internal/models"
-	"github.com/ahmetilboga2004/go-blog/internal/repository"
 	"github.com/ahmetilboga2004/go-blog/pkg/utils"
 )
 
-type UserService struct {
-	UserRepo *repository.UserRepository
+type userService struct {
+	userRepo interfaces.UserRepository
+	// mailService interfaces.MailService
+	// jwtService interfaces.JWTService
 }
 
-func NewUserService(userRepo *repository.UserRepository) *UserService {
-	return &UserService{UserRepo: userRepo}
+// mailService interfaces.MailService
+// jwtService interfaces.JWTService
+func NewUserService(userRepo interfaces.UserRepository) interfaces.UserService {
+	return &userService{
+		userRepo: userRepo,
+	}
 }
 
-func (s *UserService) RegisterUser(user *models.User) (*models.User, error) {
-	existingUser, err := s.UserRepo.FindByUsernameOrEmail(user.Username, user.Email)
+func (s *userService) RegisterUser(user *models.User) (*models.User, error) {
+	existingUser, err := s.userRepo.FindByUsernameOrEmail(user.Username, user.Email)
 	if err != nil {
 		return nil, err
 	}
@@ -25,15 +31,15 @@ func (s *UserService) RegisterUser(user *models.User) (*models.User, error) {
 		return nil, errors.New("username or email already taken")
 	}
 
-	user, err = s.UserRepo.CreateUser(user)
+	user, err = s.userRepo.Create(user)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (s *UserService) LoginUser(usernameOrEmail, password string) (string, error) {
-	user, err := s.UserRepo.FindByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+func (s *userService) LoginUser(usernameOrEmail, password string) (string, error) {
+	user, err := s.userRepo.FindByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
 	if err != nil || user == nil {
 		return "", errors.New("invalid username or email")
 	}
