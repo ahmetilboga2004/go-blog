@@ -9,16 +9,17 @@ import (
 )
 
 type userService struct {
-	userRepo interfaces.UserRepository
+	userRepo   interfaces.UserRepository
+	jwtService interfaces.JWTService
 	// mailService interfaces.MailService
-	// jwtService interfaces.JWTService
 }
 
 // mailService interfaces.MailService
 // jwtService interfaces.JWTService
-func NewUserService(userRepo interfaces.UserRepository) interfaces.UserService {
+func NewUserService(userRepo interfaces.UserRepository, jwtService interfaces.JWTService) interfaces.UserService {
 	return &userService{
-		userRepo: userRepo,
+		userRepo:   userRepo,
+		jwtService: jwtService,
 	}
 }
 
@@ -47,7 +48,7 @@ func (s *userService) LoginUser(usernameOrEmail, password string) (string, error
 	if hashedPassword != user.Password {
 		return "", errors.New("invalid password")
 	}
-	token, err := utils.GenerateJWT(user)
+	token, err := s.jwtService.GenerateToken(user)
 	if err != nil {
 		return "", err
 	}

@@ -3,8 +3,10 @@ package main
 import (
 	"net/http"
 
+	"github.com/ahmetilboga2004/go-blog/config"
 	"github.com/ahmetilboga2004/go-blog/config/database"
 	"github.com/ahmetilboga2004/go-blog/internal/handlers"
+	"github.com/ahmetilboga2004/go-blog/internal/middlewares"
 	"github.com/ahmetilboga2004/go-blog/internal/repository"
 	"github.com/ahmetilboga2004/go-blog/internal/services"
 	"github.com/ahmetilboga2004/go-blog/pkg/utils"
@@ -13,18 +15,28 @@ import (
 func main() {
 	db := database.InitDB()
 
+	config.LoadConfig()
 	userRepo := repository.NewUserRepository(db)
-	userService := services.NewUserService(userRepo)
+	jwtService := services.NewJWTService(
+		config.JWT.SecretKey,
+		config.JWT.TokenExpiration,
+		config.JWT.ResetTokenExpiration,
+		config.JWT.VerificationTokenExpiration,
+	)
+	userService := services.NewUserService(userRepo, jwtService)
 	userHandler := handlers.NewUserHandler(userService)
 
+	authMiddleware := middlewares.NewAuthMiddleware(jwtService)
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("POST /users/register", userHandler.Register)
+	authMux := authMiddleware.Auth(mux)
+
+	mux.HandleFunc("POST /users/register", authMiddleware.GuestOnly(userHandler.Register))
 	mux.HandleFunc("POST /users/login", userHandler.Login)
 
 	server := &http.Server{
 		Addr:    ":4000",
-		Handler: mux,
+		Handler: authMux,
 	}
 	err := server.ListenAndServe()
 	if err != nil {
