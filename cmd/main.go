@@ -20,6 +20,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("POST /users/register", userHandler.Register)
+	mux.HandleFunc("POST /users/login", userHandler.Login)
 
 	server := &http.Server{
 		Addr:    ":4000",

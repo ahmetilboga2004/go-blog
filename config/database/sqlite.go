@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/ahmetilboga2004/go-blog/pkg/utils"
+	_ "modernc.org/sqlite"
 )
 
 func InitDB() *sql.DB {
@@ -46,7 +47,7 @@ func createTables(db *sql.DB) error {
 			post_id BLOB,
 			user_id BLOB,
 			FOREIGN KEY(post_id) REFERENCES posts(id),
-			FOREIGN KEY(user_id) REFERENCES users(id),
+			FOREIGN KEY(user_id) REFERENCES users(id)
 		);`,
 	}
 
