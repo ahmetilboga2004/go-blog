@@ -4,33 +4,42 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/ahmetilboga2004/go-blog/internal/dto"
 	"github.com/ahmetilboga2004/go-blog/internal/interfaces"
-	"github.com/ahmetilboga2004/go-blog/internal/models"
 	"github.com/ahmetilboga2004/go-blog/pkg/utils"
+	"github.com/go-playground/validator/v10"
 )
 
 type userHandler struct {
 	userService interfaces.UserService
+	validator   *validator.Validate
 }
 
 func NewUserHandler(userService interfaces.UserService) *userHandler {
 	return &userHandler{
 		userService: userService,
+		validator:   validator.New(),
 	}
 }
 
 func (h *userHandler) Register(w http.ResponseWriter, r *http.Request) {
-	var user models.User
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+	var userReq dto.UserRequest
+	if err := json.NewDecoder(r.Body).Decode(&userReq); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	createdUser, err := h.userService.RegisterUser(&user)
+	if err := h.validator.Struct(&userReq); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	user := userReq.ToModel()
+	createdUser, err := h.userService.RegisterUser(user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	json.NewEncoder(w).Encode(createdUser)
+	userRes := dto.UserResponseFromModel(createdUser)
+	json.NewEncoder(w).Encode(userRes)
 }
 
 func (h *userHandler) Login(w http.ResponseWriter, r *http.Request) {

@@ -23,10 +23,6 @@ func NewUserService(userRepo interfaces.UserRepository) interfaces.UserService {
 }
 
 func (s *userService) RegisterUser(user *models.User) (*models.User, error) {
-	if err := user.Validate(); err != nil {
-		return nil, err
-	}
-
 	existingUser, err := s.userRepo.FindByUsernameOrEmail(user.Username, user.Email)
 	if err != nil {
 		return nil, err
