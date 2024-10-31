@@ -4,19 +4,20 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/ahmetilboga2004/go-blog/internal/interfaces"
 	"github.com/ahmetilboga2004/go-blog/internal/models"
 	"github.com/google/uuid"
 )
 
-type PostRepository struct {
+type postRepository struct {
 	DB *sql.DB
 }
 
-func NewPostRepository(db *sql.DB) *PostRepository {
-	return &PostRepository{DB: db}
+func NewPostRepository(db *sql.DB) interfaces.PostRepository {
+	return &postRepository{DB: db}
 }
 
-func (r *PostRepository) Create(post *models.Post) (*models.Post, error) {
+func (r *postRepository) Create(post *models.Post) (*models.Post, error) {
 	postID := uuid.New()
 	query := "INSERT INTO posts (id, title, content, user_id) VALUES (?, ?, ?, ?) RETURNING *"
 	err := r.DB.QueryRow(query, postID, post.Title, post.Content, post.UserID).Scan(&post.ID, &post.Title, &post.Content, &post.UserID)
@@ -26,7 +27,7 @@ func (r *PostRepository) Create(post *models.Post) (*models.Post, error) {
 	return post, nil
 }
 
-func (r *PostRepository) GetAll() ([]*models.Post, error) {
+func (r *postRepository) GetAll() ([]*models.Post, error) {
 	rows, err := r.DB.Query("SELECT * FROM posts")
 	if err != nil {
 		return nil, err
@@ -47,7 +48,7 @@ func (r *PostRepository) GetAll() ([]*models.Post, error) {
 	return posts, nil
 }
 
-func (r *PostRepository) GetByID(id uuid.UUID) (*models.Post, error) {
+func (r *postRepository) GetByID(id uuid.UUID) (*models.Post, error) {
 	query := `SELECT * FROM posts WHERE id = ?`
 	row := r.DB.QueryRow(query, id)
 	var post models.Post
@@ -60,7 +61,7 @@ func (r *PostRepository) GetByID(id uuid.UUID) (*models.Post, error) {
 	return &post, nil
 }
 
-func (r *PostRepository) Update(id uuid.UUID, post *models.Post) (*models.Post, error) {
+func (r *postRepository) Update(id uuid.UUID, post *models.Post) (*models.Post, error) {
 	query := `UPDATE posts SET title = ?, content = ? WHERE id = ? RETURNING *`
 	row := r.DB.QueryRow(query, post.Title, post.Content, id)
 	if err := row.Scan(&post.ID, &post.Title, &post.Content, &post.UserID); err != nil {
@@ -72,7 +73,7 @@ func (r *PostRepository) Update(id uuid.UUID, post *models.Post) (*models.Post, 
 	return post, nil
 }
 
-func (r *PostRepository) Delete(id uuid.UUID) error {
+func (r *postRepository) Delete(id uuid.UUID) error {
 	query := `DELETE FROM posts WHERE id = ?`
 	result, err := r.DB.Exec(query, id)
 	if err != nil {

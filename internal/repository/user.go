@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/ahmetilboga2004/go-blog/internal/interfaces"
 	"github.com/ahmetilboga2004/go-blog/internal/models"
 	"github.com/ahmetilboga2004/go-blog/pkg/utils"
 	"github.com/google/uuid"
@@ -13,7 +14,7 @@ type userRepository struct {
 	DB *sql.DB
 }
 
-func NewUserRepository(db *sql.DB) *userRepository {
+func NewUserRepository(db *sql.DB) interfaces.UserRepository {
 	return &userRepository{DB: db}
 }
 

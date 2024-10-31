@@ -40,7 +40,7 @@ func (h *userHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userRes := dto.UserResponseFromModel(createdUser)
-	json.NewEncoder(w).Encode(userRes)
+	utils.ResJSON(w, http.StatusOK, userRes)
 }
 
 func (h *userHandler) Login(w http.ResponseWriter, r *http.Request) {

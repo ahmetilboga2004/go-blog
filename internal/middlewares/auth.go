@@ -10,7 +10,7 @@ import (
 
 type contextKey string
 
-const userIDKey contextKey = "userId"
+const UserIDKey contextKey = "userId"
 
 type authMiddleware struct {
 	jwtService   interfaces.JWTService
@@ -46,7 +46,7 @@ func (m *authMiddleware) Auth(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), userIDKey, userID)
+		ctx := context.WithValue(r.Context(), UserIDKey, userID)
 		r = r.WithContext(ctx)
 
 		next.ServeHTTP(w, r)
@@ -55,7 +55,9 @@ func (m *authMiddleware) Auth(next http.Handler) http.Handler {
 
 func (m *authMiddleware) RequireLogin(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Context().Value(userIDKey) == nil {
+		userID := r.Context().Value(UserIDKey)
+
+		if userID == nil {
 			http.Error(w, "You must be logged in to access this resource", http.StatusUnauthorized)
 			return
 		}
@@ -65,7 +67,7 @@ func (m *authMiddleware) RequireLogin(next http.HandlerFunc) http.HandlerFunc {
 
 func (m *authMiddleware) GuestOnly(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Context().Value(userIDKey) != nil {
+		if r.Context().Value(UserIDKey) != nil {
 			http.Error(w, "This resource is only accessible to guests", http.StatusForbidden)
 			return
 		}
