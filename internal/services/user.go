@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"time"
 
 	"github.com/ahmetilboga2004/go-blog/internal/interfaces"
 	"github.com/ahmetilboga2004/go-blog/internal/models"
@@ -56,6 +57,20 @@ func (s *userService) LoginUser(usernameOrEmail, password string) (string, error
 	return token, nil
 }
 
-func (s *userService) LogoutUser(userId string) error {
-	return nil
+func (s *userService) LogoutUser(token string) error {
+	claims, err := s.jwtService.ParseTokenClaims(token)
+	if err != nil {
+		return errors.New("invalid token")
+	}
+	exp, ok := claims["exp"].(float64)
+	if !ok {
+		return errors.New("token expiration failed")
+	}
+
+	expiration := time.Until(time.Unix(int64(exp), 0))
+	if expiration <= 0 {
+		return errors.New("token expiration failed")
+	}
+
+	return s.redisService.BlacklistToken(token, expiration)
 }

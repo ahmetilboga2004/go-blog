@@ -27,7 +27,7 @@ func main() {
 	userService := services.NewUserService(userRepo, jwtService, redisService)
 	userHandler := handlers.NewUserHandler(userService)
 
-	authMiddleware := middlewares.NewAuthMiddleware(jwtService)
+	authMiddleware := middlewares.NewAuthMiddleware(jwtService, redisService)
 	mux := http.NewServeMux()
 
 	authMux := authMiddleware.Auth(mux)

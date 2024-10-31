@@ -13,12 +13,14 @@ type contextKey string
 const userIDKey contextKey = "userId"
 
 type authMiddleware struct {
-	jwtService interfaces.JWTService
+	jwtService   interfaces.JWTService
+	redisService interfaces.RedisService
 }
 
-func NewAuthMiddleware(jwtService interfaces.JWTService) *authMiddleware {
+func NewAuthMiddleware(jwtService interfaces.JWTService, redisService interfaces.RedisService) *authMiddleware {
 	return &authMiddleware{
-		jwtService: jwtService,
+		jwtService:   jwtService,
+		redisService: redisService,
 	}
 }
 
@@ -31,14 +33,22 @@ func (m *authMiddleware) Auth(next http.Handler) http.Handler {
 		}
 
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+		isBlacklisted, err := m.redisService.IsBlacklistedToken(tokenString)
+		if err != nil || isBlacklisted {
+			next.ServeHTTP(w, r)
+			return
+		}
+
 		userID, err := m.jwtService.ValidateToken(tokenString)
 		if err != nil {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			next.ServeHTTP(w, r)
 			return
 		}
 
 		ctx := context.WithValue(r.Context(), userIDKey, userID)
 		r = r.WithContext(ctx)
+
 		next.ServeHTTP(w, r)
 	})
 }

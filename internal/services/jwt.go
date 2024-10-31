@@ -30,7 +30,7 @@ func (s *jwtService) GenerateToken(user *models.User) (string, error) {
 		"user_id": user.ID.String(),
 		"exp":     time.Now().Add(s.tokenExpiration).Unix(),
 	}
-	return s.createTokenWithClaims(claims)
+	return s.CreateTokenWithClaims(claims)
 }
 
 func (s *jwtService) GenerateEmailVerificationToken(email string) (string, error) {
@@ -38,7 +38,7 @@ func (s *jwtService) GenerateEmailVerificationToken(email string) (string, error
 		"email": email,
 		"exp":   time.Now().Add(s.verificationTokenExpiration).Unix(),
 	}
-	return s.createTokenWithClaims(claims)
+	return s.CreateTokenWithClaims(claims)
 }
 
 func (s *jwtService) GeneratePasswordResetToken(email string) (string, error) {
@@ -46,11 +46,11 @@ func (s *jwtService) GeneratePasswordResetToken(email string) (string, error) {
 		"email": email,
 		"exp":   time.Now().Add(s.resetTokenExpiration).Unix(),
 	}
-	return s.createTokenWithClaims(claims)
+	return s.CreateTokenWithClaims(claims)
 }
 
 func (s *jwtService) ValidateToken(token string) (string, error) {
-	claims, err := s.parseTokenClaims(token)
+	claims, err := s.ParseTokenClaims(token)
 	if err != nil {
 		return "", err
 	}
@@ -63,7 +63,7 @@ func (s *jwtService) ValidateToken(token string) (string, error) {
 }
 
 func (s *jwtService) ValidateEmailVerificationToken(token string) (string, error) {
-	claims, err := s.parseTokenClaims(token)
+	claims, err := s.ParseTokenClaims(token)
 	if err != nil {
 		return "", err
 	}
@@ -76,7 +76,7 @@ func (s *jwtService) ValidateEmailVerificationToken(token string) (string, error
 }
 
 func (s *jwtService) ValidatePasswordResetToken(token string) (string, error) {
-	claims, err := s.parseTokenClaims(token)
+	claims, err := s.ParseTokenClaims(token)
 	if err != nil {
 		return "", err
 	}
@@ -88,12 +88,12 @@ func (s *jwtService) ValidatePasswordResetToken(token string) (string, error) {
 	return email, nil
 }
 
-func (s *jwtService) createTokenWithClaims(claims jwt.MapClaims) (string, error) {
+func (s *jwtService) CreateTokenWithClaims(claims jwt.MapClaims) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(s.secretKey))
 }
 
-func (s *jwtService) parseTokenClaims(tokenStr string) (jwt.MapClaims, error) {
+func (s *jwtService) ParseTokenClaims(tokenStr string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")

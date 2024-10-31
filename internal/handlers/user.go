@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/ahmetilboga2004/go-blog/internal/dto"
 	"github.com/ahmetilboga2004/go-blog/internal/interfaces"
@@ -61,11 +62,17 @@ func (h *userHandler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *userHandler) Logout(w http.ResponseWriter, r *http.Request) {
-	userId := r.Context().Value("userId").(string)
-	err := h.userService.LogoutUser(userId)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		http.Error(w, "Token yok", http.StatusUnauthorized)
 		return
 	}
 
+	token := strings.TrimPrefix(authHeader, "Bearer ")
+	if err := h.userService.LogoutUser(token); err != nil {
+		http.Error(w, "Logout işlemi başarısız", http.StatusInternalServerError)
+		return
+	}
+
+	utils.ResJSON(w, http.StatusOK, "Çıkış Başarılı")
 }

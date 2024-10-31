@@ -7,7 +7,7 @@ import (
 type UserService interface {
 	RegisterUser(user *models.User) (*models.User, error)
 	LoginUser(usernameOrEmail, password string) (string, error)
-	LogoutUser(userId string) error
+	LogoutUser(token string) error
 	// GetUserByID(id uuid.UUID) (*models.User, error)
 	// UpdateUser(id uuid.UUID, user *models.User) (*models.User, error)
 	// DeleteUser(id uuid.UUID) error
