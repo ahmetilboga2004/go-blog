@@ -9,17 +9,18 @@ import (
 )
 
 type userService struct {
-	userRepo   interfaces.UserRepository
-	jwtService interfaces.JWTService
+	userRepo     interfaces.UserRepository
+	jwtService   interfaces.JWTService
+	redisService interfaces.RedisService
 	// mailService interfaces.MailService
 }
 
 // mailService interfaces.MailService
-// jwtService interfaces.JWTService
-func NewUserService(userRepo interfaces.UserRepository, jwtService interfaces.JWTService) interfaces.UserService {
+func NewUserService(userRepo interfaces.UserRepository, jwtService interfaces.JWTService, redisService interfaces.RedisService) interfaces.UserService {
 	return &userService{
-		userRepo:   userRepo,
-		jwtService: jwtService,
+		userRepo:     userRepo,
+		jwtService:   jwtService,
+		redisService: redisService,
 	}
 }
 
@@ -53,4 +54,8 @@ func (s *userService) LoginUser(usernameOrEmail, password string) (string, error
 		return "", err
 	}
 	return token, nil
+}
+
+func (s *userService) LogoutUser(userId string) error {
+	return nil
 }

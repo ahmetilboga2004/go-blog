@@ -23,7 +23,8 @@ func main() {
 		config.JWT.ResetTokenExpiration,
 		config.JWT.VerificationTokenExpiration,
 	)
-	userService := services.NewUserService(userRepo, jwtService)
+	redisService := services.NewRedisService("localhost:6379", "", 0)
+	userService := services.NewUserService(userRepo, jwtService, redisService)
 	userHandler := handlers.NewUserHandler(userService)
 
 	authMiddleware := middlewares.NewAuthMiddleware(jwtService)

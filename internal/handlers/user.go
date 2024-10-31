@@ -59,3 +59,13 @@ func (h *userHandler) Login(w http.ResponseWriter, r *http.Request) {
 	responseData := map[string]string{"token": token}
 	utils.ResJSON(w, http.StatusOK, responseData)
 }
+
+func (h *userHandler) Logout(w http.ResponseWriter, r *http.Request) {
+	userId := r.Context().Value("userId").(string)
+	err := h.userService.LogoutUser(userId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+}
