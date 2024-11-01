@@ -24,7 +24,7 @@ func NewPostHandler(postService interfaces.PostService) *postHandler {
 }
 
 func (h *postHandler) Create(w http.ResponseWriter, r *http.Request) {
-	var postReq dto.PostRequest
+	var postReq dto.PostReq
 	if err := json.NewDecoder(r.Body).Decode(&postReq); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -47,7 +47,7 @@ func (h *postHandler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	postRes := dto.PostResponseWithUserFromModel(createdPost)
+	postRes := dto.FromPostDetail(createdPost)
 	utils.ResJSON(w, http.StatusOK, postRes)
 }
 
@@ -72,7 +72,8 @@ func (h *postHandler) GetAllPosts(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	utils.ResJSON(w, http.StatusOK, posts)
+	postsRes := dto.FromPostList(posts)
+	utils.ResJSON(w, http.StatusOK, postsRes)
 }
 
 func (h *postHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
@@ -82,7 +83,7 @@ func (h *postHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	var postReq dto.PostRequest
+	var postReq dto.PostReq
 	if err := json.NewDecoder(r.Body).Decode(&postReq); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -107,7 +108,7 @@ func (h *postHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resUpdatedPost := dto.PostResponseWithUserFromModel(updatedPost)
+	resUpdatedPost := dto.FromPostDetail(updatedPost)
 
 	utils.ResJSON(w, http.StatusOK, resUpdatedPost)
 }

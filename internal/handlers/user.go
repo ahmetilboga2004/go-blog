@@ -9,6 +9,7 @@ import (
 	"github.com/ahmetilboga2004/go-blog/internal/interfaces"
 	"github.com/ahmetilboga2004/go-blog/pkg/utils"
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 )
 
 type userHandler struct {
@@ -75,4 +76,30 @@ func (h *userHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.ResJSON(w, http.StatusOK, "Çıkış Başarılı")
+}
+
+func (h *userHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	users, err := h.userService.GetAllUsers()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	usersRes := dto.UserListResponse(users)
+	utils.ResJSON(w, http.StatusOK, usersRes)
+}
+
+func (h *userHandler) GetUserByID(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	user, err := h.userService.GetUserByID(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	userRes := dto.UserResponseFromModel(user)
+	utils.ResJSON(w, http.StatusOK, userRes)
 }

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/ahmetilboga2004/go-blog/internal/interfaces"
 	"github.com/ahmetilboga2004/go-blog/internal/models"
 	"github.com/google/uuid"
 )
@@ -12,7 +13,7 @@ type CommentRepository struct {
 	DB *sql.DB
 }
 
-func NewCommentRepository(db *sql.DB) *CommentRepository {
+func NewCommentRepository(db *sql.DB) interfaces.CommentRepository {
 	return &CommentRepository{DB: db}
 }
 

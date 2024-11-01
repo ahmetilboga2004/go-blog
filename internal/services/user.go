@@ -7,6 +7,7 @@ import (
 	"github.com/ahmetilboga2004/go-blog/internal/interfaces"
 	"github.com/ahmetilboga2004/go-blog/internal/models"
 	"github.com/ahmetilboga2004/go-blog/pkg/utils"
+	"github.com/google/uuid"
 )
 
 type userService struct {
@@ -73,4 +74,20 @@ func (s *userService) LogoutUser(token string) error {
 	}
 
 	return s.redisService.BlacklistToken(token, expiration)
+}
+
+func (s *userService) GetAllUsers() ([]*models.User, error) {
+	users, err := s.userRepo.GetAll()
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+func (s *userService) GetUserByID(id uuid.UUID) (*models.User, error) {
+	user, err := s.userRepo.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }

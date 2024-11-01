@@ -32,11 +32,17 @@ func main() {
 	postService := services.NewPostService(postRepo)
 	postHandler := handlers.NewPostHandler(postService)
 
+	commentRepo := repository.NewCommentRepository(db)
+	commentService := services.NewcommentService(commentRepo)
+	commentHandler := handlers.NewCommentHandler(commentService)
+
 	authMiddleware := middlewares.NewAuthMiddleware(jwtService, redisService)
 	mux := http.NewServeMux()
 
 	authMux := authMiddleware.Auth(mux)
 
+	mux.HandleFunc("GET /users", userHandler.GetAllUsers)
+	mux.HandleFunc("GET /users/{id}", userHandler.GetUserByID)
 	mux.HandleFunc("POST /users/register", authMiddleware.GuestOnly(userHandler.Register))
 	mux.HandleFunc("POST /users/login", authMiddleware.GuestOnly(userHandler.Login))
 	mux.HandleFunc("GET /users/logout", authMiddleware.RequireLogin(userHandler.Logout))
@@ -47,14 +53,20 @@ func main() {
 	mux.HandleFunc("PUT /posts/{id}", authMiddleware.RequireLogin(postHandler.UpdatePost))
 	mux.HandleFunc("DELETE /posts/{id}", authMiddleware.RequireLogin(postHandler.DeletePost))
 
+	mux.HandleFunc("GET /comments", commentHandler.GetAllComments)
+	mux.HandleFunc("GET /comments/{id}", commentHandler.GetCommentByID)
+	mux.HandleFunc("POST /comments", commentHandler.Create)
+	mux.HandleFunc("PUT /comments/{id}", commentHandler.UpdateComment)
+	mux.HandleFunc("DELETE /comments/{id}", commentHandler.DeleteComment)
+
 	server := &http.Server{
 		Addr:    ":4000",
 		Handler: authMux,
 	}
+	utils.Log(utils.INFO, "Sunucu başlatılıyor...")
 	err := server.ListenAndServe()
 	if err != nil {
-		utils.Log(utils.ERROR, "Sunucu başlatılırken bir hata oluştu %v", err)
-	} else {
-		utils.Log(utils.INFO, "Sunucu başlatıldı")
+		utils.Log(utils.ERROR, "Sunucu başlatılırken bir hata oluştu: %v", err)
 	}
+
 }

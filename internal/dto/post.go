@@ -5,19 +5,22 @@ import (
 	"github.com/google/uuid"
 )
 
-type PostRequest struct {
+// PostReq - Post isteği için kısa form
+type PostReq struct {
 	Title   string `json:"title" validate:"required,min=5,max=50"`
 	Content string `json:"content" validate:"required,min=5,max=1000"`
 }
 
-type PostResponseWithUser struct {
+// PostResp - Temel post yanıtı
+type PostResp struct {
 	ID      uuid.UUID `json:"id"`
 	Title   string    `json:"title"`
 	Content string    `json:"content"`
 	UserID  uuid.UUID `json:"userId"`
 }
 
-type PostResponseWithUserAndComments struct {
+// PostDetailResp - Detaylı post yanıtı (yorumlarla)
+type PostDetailResp struct {
 	ID       uuid.UUID        `json:"id"`
 	Title    string           `json:"title"`
 	Content  string           `json:"content"`
@@ -25,15 +28,17 @@ type PostResponseWithUserAndComments struct {
 	Comments []models.Comment `json:"comments"`
 }
 
-func (r *PostRequest) ToModel() *models.Post {
+// ToModel - Post modelini oluşturur
+func (r *PostReq) ToModel() *models.Post {
 	return &models.Post{
 		Title:   r.Title,
 		Content: r.Content,
 	}
 }
 
-func PostResponseWithUserFromModel(post *models.Post) *PostResponseWithUser {
-	return &PostResponseWithUser{
+// FromPost - Post modelinden yanıt oluşturur
+func FromPost(post *models.Post) *PostResp {
+	return &PostResp{
 		ID:      post.ID,
 		Title:   post.Title,
 		Content: post.Content,
@@ -41,12 +46,22 @@ func PostResponseWithUserFromModel(post *models.Post) *PostResponseWithUser {
 	}
 }
 
-func PostResponseWithUserAndCommentsFromModel(post *models.Post) *PostResponseWithUserAndComments {
-	return &PostResponseWithUserAndComments{
+// FromPostDetail - Post modelinden detaylı yanıt oluşturur
+func FromPostDetail(post *models.Post) *PostDetailResp {
+	return &PostDetailResp{
 		ID:       post.ID,
 		Title:    post.Title,
 		Content:  post.Content,
 		UserID:   post.UserID,
 		Comments: post.Comments,
 	}
+}
+
+// FromPostList - Post listesinden detaylı yanıt listesi oluşturur
+func FromPostList(posts []*models.Post) []*PostDetailResp {
+	resp := make([]*PostDetailResp, len(posts))
+	for i, post := range posts {
+		resp[i] = FromPostDetail(post)
+	}
+	return resp
 }
