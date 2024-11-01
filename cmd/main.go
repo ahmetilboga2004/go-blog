@@ -41,7 +41,11 @@ func main() {
 	mux.HandleFunc("POST /users/login", authMiddleware.GuestOnly(userHandler.Login))
 	mux.HandleFunc("GET /users/logout", authMiddleware.RequireLogin(userHandler.Logout))
 
+	mux.HandleFunc("GET /posts", postHandler.GetAllPosts)
+	mux.HandleFunc("GET /posts/{id}", postHandler.GetPostByID)
 	mux.HandleFunc("POST /posts", authMiddleware.RequireLogin(postHandler.Create))
+	mux.HandleFunc("PUT /posts/{id}", authMiddleware.RequireLogin(postHandler.UpdatePost))
+	mux.HandleFunc("DELETE /posts/{id}", authMiddleware.RequireLogin(postHandler.DeletePost))
 
 	server := &http.Server{
 		Addr:    ":4000",

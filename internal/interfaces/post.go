@@ -17,6 +17,6 @@ type PostService interface {
 	CreatePost(userId uuid.UUID, post *models.Post) (*models.Post, error)
 	GetPostByID(id uuid.UUID) (*models.Post, error)
 	GetAllPosts() ([]*models.Post, error)
-	UpdatePost(id uuid.UUID, post *models.Post) (*models.Post, error)
+	UpdatePost(userId, postId uuid.UUID, post *models.Post) (*models.Post, error)
 	DeletePost(id uuid.UUID) error
 }

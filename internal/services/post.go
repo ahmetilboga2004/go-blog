@@ -1,6 +1,8 @@
 package services
 
 import (
+	"errors"
+
 	"github.com/ahmetilboga2004/go-blog/internal/interfaces"
 	"github.com/ahmetilboga2004/go-blog/internal/models"
 	"github.com/google/uuid"
@@ -41,8 +43,16 @@ func (s *postService) GetAllPosts() ([]*models.Post, error) {
 	return posts, nil
 }
 
-func (s *postService) UpdatePost(id uuid.UUID, post *models.Post) (*models.Post, error) {
-	post, err := s.postRepo.Update(id, post)
+func (s *postService) UpdatePost(userId, postId uuid.UUID, post *models.Post) (*models.Post, error) {
+	postCheck, err := s.postRepo.GetByID(postId)
+	if err != nil {
+		return nil, errors.New("post not found")
+	}
+	if postCheck.UserID != userId {
+		return nil, errors.New("unauthorized user")
+	}
+
+	post, err = s.postRepo.Update(postId, post)
 	if err != nil {
 		return nil, err
 	}
