@@ -47,10 +47,5 @@ Ve herhangi bir problem olmazsa proje başarılı bir şekilde çalışacaktır
 
 ## Yapılacaklar
 
--   Post ve Comment için servisler yazılacak
--   Enpointler yazılacak
 -   Test kodları yazılacak
 -   API dokumantasyonu için Swagger eklenecek
--   Bazı veritabanı sorguları düzeltilecek
--   Validators eklenecek
--   Dto'lar düzenlenecek
