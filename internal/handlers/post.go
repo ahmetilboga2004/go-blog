@@ -119,7 +119,12 @@ func (h *postHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if err := h.postService.DeletePost(id); err != nil {
+	userId, err := utils.GetUserIDFromContext(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+	if err := h.postService.DeletePost(userId, id); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

@@ -59,8 +59,15 @@ func (s *postService) UpdatePost(userId, postId uuid.UUID, post *models.Post) (*
 	return post, nil
 }
 
-func (s *postService) DeletePost(id uuid.UUID) error {
-	if err := s.postRepo.Delete(id); err != nil {
+func (s *postService) DeletePost(userId, postId uuid.UUID) error {
+	checkPost, err := s.postRepo.GetByID(postId)
+	if err != nil {
+		return err
+	}
+	if checkPost.UserID != userId {
+		return errors.New("unauthorized")
+	}
+	if err := s.postRepo.Delete(postId); err != nil {
 		return err
 	}
 	return nil
