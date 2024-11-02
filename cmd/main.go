@@ -66,9 +66,9 @@ func main() {
 
 	mux.HandleFunc("GET /comments", commentHandler.GetAllComments)
 	mux.HandleFunc("GET /comments/{id}", commentHandler.GetCommentByID)
-	mux.HandleFunc("POST /comments", commentHandler.Create)
-	mux.HandleFunc("PUT /comments/{id}", commentHandler.UpdateComment)
-	mux.HandleFunc("DELETE /comments/{id}", commentHandler.DeleteComment)
+	mux.HandleFunc("POST /comments", authMiddleware.RequireLogin(commentHandler.Create))
+	mux.HandleFunc("PUT /comments/{id}", authMiddleware.RequireLogin(commentHandler.UpdateComment))
+	mux.HandleFunc("DELETE /comments/{id}", authMiddleware.RequireLogin(commentHandler.DeleteComment))
 
 	server := &http.Server{
 		Addr:    ":4000",
