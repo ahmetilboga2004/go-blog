@@ -23,80 +23,124 @@ func NewPostHandler(postService interfaces.PostService) *postHandler {
 	}
 }
 
+// Create godoc
+// @Tags posts
+// @Accept json
+// @Produce json
+// @Summary Create a new post
+// @Description Create a new post with the provided data
+// @Param post body dto.PostReq true "Post bilgileri"
+// @Success 201 {object} dto.PostResp
+// @Failure 400 {object} utils.ErrorResponse
+// @Failure 401 {object} utils.ErrorResponse
+// @Router /posts [post]
 func (h *postHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var postReq dto.PostReq
 	if err := json.NewDecoder(r.Body).Decode(&postReq); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.HandleError(w, http.StatusBadRequest, err)
 		return
 	}
 
 	if err := h.validator.Struct(&postReq); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.HandleError(w, http.StatusBadRequest, err)
 		return
 	}
 
 	userId, err := utils.GetUserIDFromContext(r)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
+		utils.HandleError(w, http.StatusUnauthorized, err)
 		return
 	}
 
 	post := postReq.ToModel()
 	createdPost, err := h.postService.CreatePost(userId, post)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.HandleError(w, http.StatusBadRequest, err)
 		return
 	}
 	postRes := dto.FromPostDetail(createdPost)
-	utils.ResJSON(w, http.StatusOK, postRes)
+	utils.ResponseJSON(w, http.StatusOK, postRes)
 }
 
+// GetPostByID godoc
+// @Tags posts
+// @Accept json
+// @Produce json
+// @Summary Get a post by ID
+// @Description Retrieve a post by its unique ID
+// @Param id path string true "Post ID"
+// @Success 200 {object} dto.PostDetailResp
+// @Failure 400 {object} utils.ErrorResponse
+// @Failure 404 {object} utils.ErrorResponse
+// @Router /posts/{id} [get]
 func (h *postHandler) GetPostByID(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := uuid.Parse(idStr)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		utils.HandleError(w, http.StatusBadRequest, err)
 		return
 	}
 	post, err := h.postService.GetPostByID(id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.HandleError(w, http.StatusNotFound, err)
 		return
 	}
-	utils.ResJSON(w, http.StatusOK, post)
+	utils.ResponseJSON(w, http.StatusOK, post)
 }
 
+// GetAllPosts godoc
+// @Tags posts
+// @Accept json
+// @Produce json
+// @Summary Get all posts
+// @Description Retrieve a list of all posts
+// @Success 200 {array} dto.PostResp
+// @Failure 400 {object} utils.ErrorResponse
+// @Router /posts [get]
 func (h *postHandler) GetAllPosts(w http.ResponseWriter, r *http.Request) {
 	posts, err := h.postService.GetAllPosts()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		utils.HandleError(w, http.StatusBadRequest, err)
 		return
 	}
 	postsRes := dto.FromPostList(posts)
-	utils.ResJSON(w, http.StatusOK, postsRes)
+	utils.ResponseJSON(w, http.StatusOK, postsRes)
 }
 
+// UpdatePost godoc
+// @Tags posts
+// @Accept json
+// @Produce json
+// @Summary Update a post by ID
+// @Description Update a post with the provided ID and data
+// @Param id path string true "Post ID"
+// @Param post body dto.PostReq true "Post bilgileri"
+// @Success 200 {object} dto.PostResp
+// @Failure 400 {object} utils.ErrorResponse
+// @Failure 401 {object} utils.ErrorResponse
+// @Failure 404 {object} utils.ErrorResponse
+// @Router /posts/{id} [put]
 func (h *postHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	postIdStr := r.PathValue("id")
 	postId, err := uuid.Parse(postIdStr)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		utils.HandleError(w, http.StatusBadRequest, err)
 		return
 	}
 	var postReq dto.PostReq
 	if err := json.NewDecoder(r.Body).Decode(&postReq); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.HandleError(w, http.StatusBadRequest, err)
 		return
 	}
 
 	if err := h.validator.Struct(&postReq); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.HandleError(w, http.StatusBadRequest, err)
 		return
 	}
 
 	userId, err := utils.GetUserIDFromContext(r)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
+		utils.HandleError(w, http.StatusUnauthorized, err)
 		return
 	}
 
@@ -104,31 +148,43 @@ func (h *postHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 
 	updatedPost, err := h.postService.UpdatePost(userId, postId, post)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		utils.HandleError(w, http.StatusBadRequest, err)
 		return
 	}
 
 	resUpdatedPost := dto.FromPostDetail(updatedPost)
 
-	utils.ResJSON(w, http.StatusOK, resUpdatedPost)
+	utils.ResponseJSON(w, http.StatusOK, resUpdatedPost)
 }
 
+// DeletePost godoc
+// @Tags posts
+// @Accept json
+// @Produce json
+// @Summary Delete a post by ID
+// @Description Remove a post with the specified ID
+// @Param id path string true "Post ID"
+// @Success 204
+// @Failure 400 {object} utils.ErrorResponse
+// @Failure 401 {object} utils.ErrorResponse
+// @Failure 404 {object} utils.ErrorResponse
+// @Router /posts/{id} [delete]
 func (h *postHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := uuid.Parse(idStr)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.HandleError(w, http.StatusBadRequest, err)
 		return
 	}
 	userId, err := utils.GetUserIDFromContext(r)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
+		utils.HandleError(w, http.StatusUnauthorized, err)
 		return
 	}
 	if err := h.postService.DeletePost(userId, id); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		utils.HandleError(w, http.StatusBadRequest, err)
 		return
 	}
 
-	utils.ResJSON(w, http.StatusNoContent, "")
+	utils.ResponseJSON(w, http.StatusNoContent, "")
 }

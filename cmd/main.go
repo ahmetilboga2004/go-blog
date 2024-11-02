@@ -5,12 +5,20 @@ import (
 
 	"github.com/ahmetilboga2004/go-blog/config"
 	"github.com/ahmetilboga2004/go-blog/config/database"
+	_ "github.com/ahmetilboga2004/go-blog/docs"
 	"github.com/ahmetilboga2004/go-blog/internal/handlers"
 	"github.com/ahmetilboga2004/go-blog/internal/middlewares"
 	"github.com/ahmetilboga2004/go-blog/internal/repository"
 	"github.com/ahmetilboga2004/go-blog/internal/services"
 	"github.com/ahmetilboga2004/go-blog/pkg/utils"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
+
+// @title Go Blog API
+// @version 1.0
+// @description Bu API, bir blog uygulamasına ait tüm endpointleri içerir.
+// @host localhost:4000
+// @BasePath /
 
 func main() {
 	db := database.InitDB()
@@ -37,7 +45,10 @@ func main() {
 	commentHandler := handlers.NewCommentHandler(commentService)
 
 	authMiddleware := middlewares.NewAuthMiddleware(jwtService, redisService)
+
 	mux := http.NewServeMux()
+
+	mux.Handle("/swagger/", httpSwagger.WrapHandler)
 
 	authMux := authMiddleware.Auth(mux)
 

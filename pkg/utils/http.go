@@ -9,7 +9,20 @@ import (
 	"github.com/google/uuid"
 )
 
-func ResJSON(w http.ResponseWriter, status int, data any) error {
+type ErrorResponse struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
+
+func HandleError(w http.ResponseWriter, status int, err error) {
+	errorResponse := ErrorResponse{
+		Code:    status,
+		Message: err.Error(),
+	}
+	ResponseJSON(w, status, errorResponse)
+}
+
+func ResponseJSON(w http.ResponseWriter, status int, data any) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	return json.NewEncoder(w).Encode(data)

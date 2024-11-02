@@ -5,13 +5,11 @@ import (
 	"github.com/google/uuid"
 )
 
-// PostReq - Post isteği için kısa form
 type PostReq struct {
 	Title   string `json:"title" validate:"required,min=5,max=50"`
 	Content string `json:"content" validate:"required,min=5,max=1000"`
 }
 
-// PostResp - Temel post yanıtı
 type PostResp struct {
 	ID      uuid.UUID `json:"id"`
 	Title   string    `json:"title"`
@@ -19,7 +17,6 @@ type PostResp struct {
 	UserID  uuid.UUID `json:"userId"`
 }
 
-// PostDetailResp - Detaylı post yanıtı (yorumlarla)
 type PostDetailResp struct {
 	ID       uuid.UUID        `json:"id"`
 	Title    string           `json:"title"`
@@ -28,7 +25,6 @@ type PostDetailResp struct {
 	Comments []models.Comment `json:"comments"`
 }
 
-// ToModel - Post modelini oluşturur
 func (r *PostReq) ToModel() *models.Post {
 	return &models.Post{
 		Title:   r.Title,
@@ -36,7 +32,6 @@ func (r *PostReq) ToModel() *models.Post {
 	}
 }
 
-// FromPost - Post modelinden yanıt oluşturur
 func FromPost(post *models.Post) *PostResp {
 	return &PostResp{
 		ID:      post.ID,
@@ -46,7 +41,6 @@ func FromPost(post *models.Post) *PostResp {
 	}
 }
 
-// FromPostDetail - Post modelinden detaylı yanıt oluşturur
 func FromPostDetail(post *models.Post) *PostDetailResp {
 	return &PostDetailResp{
 		ID:       post.ID,
@@ -57,7 +51,6 @@ func FromPostDetail(post *models.Post) *PostDetailResp {
 	}
 }
 
-// FromPostList - Post listesinden detaylı yanıt listesi oluşturur
 func FromPostList(posts []*models.Post) []*PostDetailResp {
 	resp := make([]*PostDetailResp, len(posts))
 	for i, post := range posts {

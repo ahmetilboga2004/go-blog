@@ -48,4 +48,3 @@ Ve herhangi bir problem olmazsa proje başarılı bir şekilde çalışacaktır
 ## Yapılacaklar
 
 -   Test kodları yazılacak
--   API dokumantasyonu için Swagger eklenecek

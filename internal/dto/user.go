@@ -13,7 +13,10 @@ type UserRequest struct {
 	Password  string `json:"password" validate:"required,min=8"`
 }
 
-// containsany=!@#$%^&*"
+type LoginRequest struct {
+	UsernameOrEmail string `json:"username_or_email" validate:"required,min=3,max=30,alphanum"`
+	Password        string `json:"password" validate:"required,min=8"`
+}
 
 type UserResponse struct {
 	ID        uuid.UUID `json:"id"`
