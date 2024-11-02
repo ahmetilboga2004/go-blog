@@ -94,7 +94,7 @@ func (h *postHandler) GetPostByID(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Summary Get all posts
 // @Description Retrieve a list of all posts
-// @Success 200 {array} dto.PostResp
+// @Success 200 {array} dto.PostResp "Empty array if no posts"
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /posts [get]
 func (h *postHandler) GetAllPosts(w http.ResponseWriter, r *http.Request) {

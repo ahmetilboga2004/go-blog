@@ -4,8 +4,12 @@ definitions:
     properties:
       content:
         type: string
+      postId:
+        format: uuid
+        type: string
     required:
     - content
+    - postId
     type: object
   dto.CommentResponse:
     properties:
@@ -143,6 +147,12 @@ paths:
       produces:
       - application/json
       responses:
+        "200":
+          description: Empty array if no comments
+          schema:
+            items:
+              $ref: '#/definitions/dto.CommentResponse'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -281,7 +291,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Empty array if no posts
           schema:
             items:
               $ref: '#/definitions/dto.PostResp'
@@ -428,7 +438,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Empty array if no users
           schema:
             items:
               $ref: '#/definitions/dto.UserResponse'

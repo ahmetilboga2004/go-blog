@@ -6,7 +6,8 @@ import (
 )
 
 type CommentRequest struct {
-	Content string `json:"content" validate:"required"`
+	Content string    `json:"content" validate:"required"`
+	PostID  uuid.UUID `json:"postId" validate:"required" format:"uuid"`
 }
 
 type CommentResponse struct {

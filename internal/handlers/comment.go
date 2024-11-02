@@ -92,7 +92,7 @@ func (h *commentHandler) GetCommentByID(w http.ResponseWriter, r *http.Request) 
 // @Produce json
 // @Summary Get all comments
 // @Description Retrieve a list of all comments
-// @Succcess 200 {array} dto.CommentResponse
+// @Success 200 {array} dto.CommentResponse "Empty array if no comments"
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /comments [get]
 func (h *commentHandler) GetAllComments(w http.ResponseWriter, r *http.Request) {

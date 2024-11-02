@@ -114,7 +114,7 @@ func (h *userHandler) Logout(w http.ResponseWriter, r *http.Request) {
 // @Tags users
 // @Accept json
 // @Produce json
-// @Success 200 {array} dto.UserResponse
+// @Success 200 {array} dto.UserResponse "Empty array if no users"
 // @Failure 500 {object} utils.ErrorResponse
 // @Router /users [get]
 func (h *userHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {

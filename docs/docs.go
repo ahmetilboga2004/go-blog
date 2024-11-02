@@ -29,6 +29,15 @@ const docTemplate = `{
                 ],
                 "summary": "Get all comments",
                 "responses": {
+                    "200": {
+                        "description": "Empty array if no comments",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.CommentResponse"
+                            }
+                        }
+                    },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
@@ -237,7 +246,7 @@ const docTemplate = `{
                 "summary": "Get all posts",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Empty array if no posts",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -459,7 +468,7 @@ const docTemplate = `{
                 "summary": "Tüm kullanıcıları getir",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Empty array if no users",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -643,11 +652,16 @@ const docTemplate = `{
         "dto.CommentRequest": {
             "type": "object",
             "required": [
-                "content"
+                "content",
+                "postId"
             ],
             "properties": {
                 "content": {
                     "type": "string"
+                },
+                "postId": {
+                    "type": "string",
+                    "format": "uuid"
                 }
             }
         },
