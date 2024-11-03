@@ -25,12 +25,12 @@ func NewUserHandler(userService interfaces.UserService) *userHandler {
 	}
 }
 
-// @Summary Kullanıcı kaydı
-// @Description Yeni bir kullanıcı oluşturur.
+// @Summary User Registration
+// @Description Creates a new user.
 // @Tags users
 // @Accept json
 // @Produce json
-// @Param user body dto.UserRequest true "Kullanıcı bilgileri"
+// @Param user body dto.UserRequest true "User details"
 // @Success 201 {object} dto.UserResponse
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /users/register [post]
@@ -54,12 +54,12 @@ func (h *userHandler) Register(w http.ResponseWriter, r *http.Request) {
 	utils.ResponseJSON(w, http.StatusOK, userRes)
 }
 
-// @Summary Kullanıcı girişi
-// @Description Kullanıcının giriş yapmasını sağlar ve JWT token döner.
+// @Summary User Login
+// @Description Allows a user to log in and returns a JWT token.
 // @Tags users
 // @Accept json
 // @Produce json
-// @Param credentials body dto.LoginRequest true "Kullanıcı adı veya email ve şifre"
+// @Param credentials body dto.LoginRequest true "Username or email and password"
 // @Success 200 {object} map[string]string
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /users/login [post]
@@ -84,12 +84,12 @@ func (h *userHandler) Login(w http.ResponseWriter, r *http.Request) {
 	utils.ResponseJSON(w, http.StatusOK, responseData)
 }
 
-// @Summary Kullanıcı çıkışı
-// @Description Kullanıcının çıkış yapmasını sağlar.
+// @Summary User Logout
+// @Description Allows a user to log out.
 // @Tags users
 // @Accept json
 // @Produce json
-// @Success 200 {string} string "Çıkış Başarılı"
+// @Success 200 {string} string "Logout Successful"
 // @Failure 401 {object} utils.ErrorResponse
 // @Failure 500 {object} utils.ErrorResponse
 // @Router /users/logout [get]
@@ -109,8 +109,8 @@ func (h *userHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	utils.ResponseJSON(w, http.StatusOK, "Çıkış Başarılı")
 }
 
-// @Summary Tüm kullanıcıları getir
-// @Description Veritabanındaki tüm kullanıcıları listeler.
+// @Summary Get All Users
+// @Description Lists all users from the database.
 // @Tags users
 // @Accept json
 // @Produce json
@@ -127,12 +127,12 @@ func (h *userHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	utils.ResponseJSON(w, http.StatusOK, usersRes)
 }
 
-// @Summary Belirli bir kullanıcıyı getir
-// @Description ID'sine göre kullanıcıyı getirir.
+// @Summary Get User by ID
+// @Description Retrieves a user by their ID.
 // @Tags users
 // @Accept json
 // @Produce json
-// @Param id path string true "Kullanıcı ID"
+// @Param id path string true "User ID"
 // @Success 200 {object} dto.UserResponse
 // @Failure 400 {object} utils.ErrorResponse
 // @Failure 404 {object} utils.ErrorResponse

@@ -45,6 +45,7 @@ go run cmd/main.go
 
 Ve herhangi bir problem olmazsa proje başarılı bir şekilde çalışacaktır
 
-## Yapılacaklar
+### API Dokoumantasyonu
 
--   Test kodları yazılacak
+Api dokumantasyonunu Swagger ile yaptım. Dokumantasyona ulaşmak için bu adresi tarayıcıda açabilirsiniz:
+[API Dokumantasyon linki](http://localhost:4000/swagger/index.html)
